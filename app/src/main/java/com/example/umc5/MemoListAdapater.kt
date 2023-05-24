@@ -32,6 +32,7 @@ class MemoListAdapater(private val itemList:ArrayList<DataObj>):RecyclerView.Ada
                     memoDatabase.memoDao().delItem(adapterPosition)
                 }
                 false
+
             }
             itemView.setOnClickListener {
                 val pos = adapterPosition
