@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.SimpleAdapter.ViewBinder
+import com.example.umc5.database.MemoDatabase
 import com.example.umc5.databinding.ActivityAddMemoBinding
 
 class AddMemoActivity : AppCompatActivity() {
     private val binding by lazy { ActivityAddMemoBinding.inflate(layoutInflater) }
     override fun onCreate(savedInstanceState: Bundle?) {
+        val db = MemoDatabase.getInstance(applicationContext)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         var existed = intent.getStringExtra("existed")

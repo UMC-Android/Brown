@@ -10,7 +10,11 @@ import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.umc5.database.MemoData
+import com.example.umc5.database.MemoDatabase
+import com.example.umc5.database.MemoDao
 import com.example.umc5.databinding.ActivityMainBinding
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -22,9 +26,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         val itemList = ArrayList<DataObj>()
         var modpos=0
+        val db = MemoDatabase.getInstance(applicationContext)
+
+
 
         val memoAdapter = MemoListAdapater(itemList)
-        memoAdapter.notifyDataSetChanged()
+        memoAdapter.setMemoDatabase(db!!)/*
+        thread(start = true) {
+            itemList.addAll(db!!.memoDao().restart())
+            runOnUiThread {
+                memoAdapter.notifyDataSetChanged()
+            }
+        }*/
         binding.memoList.adapter = memoAdapter
         binding.memoList.layoutManager =LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
 
@@ -33,6 +46,8 @@ class MainActivity : AppCompatActivity() {
             if(result.resultCode==RESULT_OK){
                 val mString = result.data?.getStringExtra("text")
                 itemList.add(DataObj(mString.toString()))
+
+
                 memoAdapter.notifyDataSetChanged()
             }
         }
@@ -62,3 +77,4 @@ class MainActivity : AppCompatActivity() {
 
     }
 }
+

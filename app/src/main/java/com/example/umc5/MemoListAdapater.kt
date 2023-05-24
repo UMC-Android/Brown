@@ -5,15 +5,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.umc5.database.MemoData
+import com.example.umc5.database.MemoDatabase
+import kotlin.concurrent.thread
 
 class MemoListAdapater(private val itemList:ArrayList<DataObj>):RecyclerView.Adapter<MemoListAdapater.MemoViewHolder>() {
     interface OnItemClickListener{
         fun onItemClick(view:View,position: Int)
     }
     private lateinit var mOnItemClickListener: OnItemClickListener
-
+    private lateinit var memoDatabase: MemoDatabase
     fun setOnItemClickListener(onItemClickListener: OnItemClickListener){
         mOnItemClickListener = onItemClickListener
+    }
+    fun setMemoDatabase(memoDatabase: MemoDatabase){
+        this.memoDatabase=memoDatabase
     }
 
     inner class MemoViewHolder(itemView:View):RecyclerView.ViewHolder(itemView){
@@ -22,6 +28,9 @@ class MemoListAdapater(private val itemList:ArrayList<DataObj>):RecyclerView.Ada
             itemView.setOnLongClickListener{
                 removeData(adapterPosition)
                 notifyItemRemoved(adapterPosition)
+                thread(start=true){
+                    memoDatabase.memoDao().delItem(adapterPosition)
+                }
                 false
             }
             itemView.setOnClickListener {
@@ -29,6 +38,9 @@ class MemoListAdapater(private val itemList:ArrayList<DataObj>):RecyclerView.Ada
                 if(pos!=RecyclerView.NO_POSITION&&mOnItemClickListener!=null){
                     mOnItemClickListener.onItemClick(itemView,pos)
                 }
+            }
+            thread(start=true) {
+                memoDatabase.memoDao().insert(MemoData(memoText.text.toString(), adapterPosition))
             }
         }
 
